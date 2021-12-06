@@ -19,7 +19,7 @@ st.sidebar.header('User Input Parameters')
 
 def user_input_hiper_p():
     nro_muestra = st.sidebar.slider('Numero de datos', 15, 300)
-    K = st.sidebar.slider('Neighbours', 1, round(nro_muestra * 0.7))
+    K = st.sidebar.slider('Neighbours', 1, round(nro_muestra * 0.75))
     
     return nro_muestra, K
 
@@ -40,7 +40,7 @@ knn.fit(X_train, y_train)
 
 
 # Definimos el tamaño de la figura
-fig = plt.figure(figsize=(10,8))
+fig = plt.figure(figsize=(8,6))
 
 
 # Definimos una grilla de valores que abarcan todo el rango de cada variable
@@ -65,6 +65,31 @@ plt.ylabel(f'$x_2$', fontsize=15)
 plt.title('Fronteras de decisión', fontsize=15);
 
 
-
 st.subheader('Prediction')
 st.pyplot(fig)
+
+from sklearn.model_selection import cross_val_score, KFold
+kf = KFold(n_splits=5, shuffle=True, random_state=12)
+
+scores_para_df = []
+
+for i in range(1, (round(nro_muestra * 0.75) + 1)):
+    
+    # En cada iteración, instanciamos el modelo con un hiperparámetro distinto
+    model = KNeighborsClassifier(n_neighbors=i)
+    
+    # cross_val_scores nos devuelve un array de 5 resultados,
+    # uno por cada partición que hizo automáticamente CV
+    cv_scores = cross_val_score(model, X_train, y_train, cv=kf)
+    
+    # Para cada valor de n_neighbours, creamos un diccionario con el valor
+    # de n_neighbours y la media y el desvío de los scores
+     
+    # Guardamos cada uno en la lista de diccionarios
+    scores_para_df.append(np.mean(cv_scores))
+
+
+fig2 = plt.figure(figsize=(8,4))
+sns.lineplot(range(round(nro_muestra * 0.75)), scores_para_df)
+st.subheader('Accuracy')
+st.pyplot(fig2)
