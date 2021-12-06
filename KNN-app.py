@@ -19,14 +19,14 @@ st.sidebar.header('User Input Parameters')
 
 def user_input_hiper_p():
     nro_muestra = st.sidebar.slider('Numero de datos', 15, 300)
-    K = st.sidebar.slider('Neighbours', 1, round(nro_muestra * 0.75))
+    K = st.sidebar.slider('Neighbours', 1, nro_muestra)
     
     return nro_muestra, K
 
 nro_muestra, K = user_input_hiper_p()
 
 
-X, y = make_blobs(n_samples=nro_muestra, n_features=2, centers=[[2,2],[1,1]], shuffle=False, random_state=7)
+X, y = make_blobs(n_samples= round (nro_muestra / 0.75 ), n_features=2, centers=[[2,2],[1,1]], shuffle=False, random_state=7)
 
 df = pd.DataFrame(X, columns=['x1', 'x2'])
 df['y'] = y
@@ -73,7 +73,7 @@ kf = KFold(n_splits=5, shuffle=True, random_state=12)
 
 scores_para_df = []
 
-for i in range(1, (round(nro_muestra * 0.75) + 1)):
+for i in range(1, nro_muestra + 1):
     
     # En cada iteración, instanciamos el modelo con un hiperparámetro distinto
     model = KNeighborsClassifier(n_neighbors=i)
@@ -90,6 +90,7 @@ for i in range(1, (round(nro_muestra * 0.75) + 1)):
 
 
 fig2 = plt.figure(figsize=(8,4))
-sns.lineplot(range(round(nro_muestra * 0.75)), scores_para_df)
+sns.lineplot(range (nro_muestra), scores_para_df)
+
 st.subheader('Accuracy')
 st.pyplot(fig2)
