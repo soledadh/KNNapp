@@ -21,6 +21,7 @@ def user_input_hiper_p():
     nro_muestra = st.sidebar.slider('Numero de datos', 15, 300)
     K = st.sidebar.slider('Neighbours', 1, nro_muestra)
     
+    
     return nro_muestra, K
 
 nro_muestra, K = user_input_hiper_p()
@@ -38,10 +39,10 @@ knn = KNeighborsClassifier(n_neighbors=K)
 
 knn.fit(X_train, y_train)
 
-
+st.subheader('Prediction')
+test = st.checkbox('Subset test')
 # Definimos el tamaño de la figura
 fig = plt.figure(figsize=(8,6))
-
 
 # Definimos una grilla de valores que abarcan todo el rango de cada variable
 x1_min, x1_max = X_train['x1'].min() - 1, X_train['x1'].max() + 1
@@ -57,6 +58,8 @@ plt.pcolormesh(x1, x2, Z, cmap = ListedColormap(sns.color_palette(n_colors=2)), 
 # Visualizamos los datos de entrenamiento
 sns.scatterplot(x=X_train['x1'], y=X_train['x2'], hue=y_train, s=75)
 
+if test:
+    sns.scatterplot(x=X_test['x1'], y=X_test['x2'], hue=y_test, marker="+", s=75)
 
 
 # Definimos los rótulos del gráfico
@@ -65,7 +68,7 @@ plt.ylabel(f'$x_2$', fontsize=15)
 plt.title('Fronteras de decisión', fontsize=15);
 
 
-st.subheader('Prediction')
+
 st.pyplot(fig)
 
 from sklearn.model_selection import cross_val_score, KFold
